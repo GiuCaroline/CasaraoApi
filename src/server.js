@@ -6,6 +6,10 @@ const bcrypt = require('bcryptjs');
 const app = express();
 const port = process.env.PORT || 3333;
 
+function tratarCampo(valor) {
+    return valor === "" ? null : valor;
+}
+
 app.use(cors({
     origin: '*'
 }));
@@ -63,7 +67,7 @@ app.post('/auth/register', async (req, res) => {
 
     try {
         const userExists = await pool.query(
-            'SELECT id FROM usuarios WHERE email = $19',
+            'SELECT id FROM usuarios WHERE email = $1',
             [email]
         );
 
@@ -99,7 +103,7 @@ app.post('/auth/register', async (req, res) => {
                 cidade,
                 cargo2,
                 cargo3,
-                cargo4,
+                cargo4
             )
             VALUES (
                 $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,
@@ -110,28 +114,28 @@ app.post('/auth/register', async (req, res) => {
             [
                 nome,
                 nascimento,
-                sexo,
+                tratarCampo(sexo),
                 estadoCivil,
-                conjuge,
-                escolaridade,
+                tratarCampo(conjuge),
+                tratarCampo(escolaridade),
                 situacao,
-                mae,
-                pai,
-                telefone,
-                cep,
-                uf,
-                endereco,
-                bairro,
-                complemento,
-                cargo,
-                membro,
-                batismo,
+                tratarCampo(mae),
+                tratarCampo(pai),
+                tratarCampo(telefone),
+                tratarCampo(cep),
+                tratarCampo(uf),
+                tratarCampo(endereco),
+                tratarCampo(bairro),
+                tratarCampo(complemento),
+                tratarCampo(cargo),
+                tratarCampo(membro),
+                tratarCampo(batismo),
                 email,
                 hashedPassword,
-                cidade,
-                cargo2,
-                cargo3,
-                cargo4,
+                tratarCampo(cidade),
+                tratarCampo(cargo2),
+                tratarCampo(cargo3),
+                tratarCampo(cargo4)
             ]
         );
 
@@ -152,7 +156,7 @@ app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await pool.query('SELECT * FROM users WHERE email = $19', [email]);
+        const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
         if (user.rows.length === 0) {
             return res.status(400).json({ error: 'Credenciais inválidas' });
