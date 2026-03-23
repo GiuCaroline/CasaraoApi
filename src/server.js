@@ -47,6 +47,9 @@ app.post('/auth/register', async (req, res) => {
         email,
         senha,
         cidade,
+        cargo2,
+        cargo3,
+        cargo4,
     } = req.body;
 
     // 🔎 validações mínimas
@@ -60,7 +63,7 @@ app.post('/auth/register', async (req, res) => {
 
     try {
         const userExists = await pool.query(
-            'SELECT id FROM usuarios WHERE email = $1',
+            'SELECT id FROM usuarios WHERE email = $19',
             [email]
         );
 
@@ -93,11 +96,14 @@ app.post('/auth/register', async (req, res) => {
                 dtabatismo,
                 email,
                 password,
-                cidade
+                cidade,
+                cargo2,
+                cargo3,
+                cargo4,
             )
             VALUES (
                 $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,
-                $11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21
+                $11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24
             )
             RETURNING id, nome, email
             `,
@@ -123,6 +129,9 @@ app.post('/auth/register', async (req, res) => {
                 email,
                 hashedPassword,
                 cidade,
+                cargo2,
+                cargo3,
+                cargo4,
             ]
         );
 
@@ -143,7 +152,7 @@ app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const user = await pool.query('SELECT * FROM users WHERE email = $19', [email]);
 
         if (user.rows.length === 0) {
             return res.status(400).json({ error: 'Credenciais inválidas' });
