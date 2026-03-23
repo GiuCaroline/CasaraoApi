@@ -171,7 +171,7 @@ app.post('/auth/login', async (req, res) => {
             message: 'Login realizado com sucesso',
             user: {
                 id: user.rows[0].id,
-                name: user.rows[0].name,
+                name: user.rows[0].nome,
                 email: user.rows[0].email
             }
         });
