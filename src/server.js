@@ -204,3 +204,5 @@ app.get('/auth/user/:id', async (req, res) => {
         res.status(500).json({ error: 'Erro no servidor' });
     }
 });
+
+app.listen(port, '0.0.0.0', () => { console.log('Servidor rodando na porta ${port}'); })
