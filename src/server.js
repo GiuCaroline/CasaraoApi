@@ -182,6 +182,25 @@ app.post('/auth/login', async (req, res) => {
     }
 });
 
-app.listen(port, '0.0.0.0', () => {
-    console.log(`Servidor rodando na porta ${port}`);
+app.get('/auth/user/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const user = await pool.query(
+            'SELECT * FROM usuarios WHERE id = $1',
+            [id]
+        );
+
+        if (user.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        res.json({
+            user: user.rows[0]
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erro no servidor' });
+    }
 });
