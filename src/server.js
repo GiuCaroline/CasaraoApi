@@ -56,8 +56,9 @@ app.post('/auth/register', async (req, res) => {
         cargo4,
     } = req.body;
 
-    // 🔎 validações mínimas
-    if (!nome || !email || !senha) {
+    const emailLower = email?.toLowerCase();
+
+    if (!nome || !emailLower || !senha) {
         return res.status(400).json({ error: 'Nome, e-mail e senha são obrigatórios' });
     }
 
@@ -68,7 +69,7 @@ app.post('/auth/register', async (req, res) => {
     try {
         const userExists = await pool.query(
             'SELECT id FROM usuarios WHERE email = $1',
-            [email]
+            [emailLower]
         );
 
         if (userExists.rows.length > 0) {
@@ -130,7 +131,7 @@ app.post('/auth/register', async (req, res) => {
                 tratarCampo(cargo),
                 tratarCampo(membro),
                 tratarCampo(batismo),
-                email,
+                emailLower,
                 hashedPassword,
                 tratarCampo(cidade),
                 tratarCampo(cargo2),
