@@ -205,4 +205,106 @@ app.get('/auth/user/:id', async (req, res) => {
     }
 });
 
+app.put('/auth/updateUser/:id', async (req, res) => {
+  const { id } = req.params;
+
+  let {
+    nome,
+    nascimento,
+    sexo,
+    estadoCivil,
+    conjuge,
+    escolaridade,
+    situacao,
+    mae,
+    pai,
+    telefone,
+    cep,
+    uf,
+    endereco,
+    bairro,
+    complemento,
+    cargo,
+    membro,
+    batismo,
+    email,
+    senha,
+    cidade,
+    cargo2,
+    cargo3,
+    cargo4,
+    cor
+  } = req.body;
+
+  try {
+    const campos = [];
+    const valores = [];
+    let index = 1;
+
+    function addCampo(nomeCampo, valor) {
+      if (valor !== undefined) {
+        campos.push(`${nomeCampo} = $${index}`);
+        valores.push(tratarCampo(valor));
+        index++;
+      }
+    }
+
+    addCampo("nome", nome);
+    addCampo("dtanasc", nascimento);
+    addCampo("sexo", sexo);
+    addCampo("estadocivil", estadoCivil);
+    addCampo("conjuge", conjuge);
+    addCampo("grauinst", escolaridade);
+    addCampo("situacao", situacao);
+    addCampo("mae", mae);
+    addCampo("pai", pai);
+    addCampo("celular", telefone);
+    addCampo("cep", cep);
+    addCampo("uf", uf);
+    addCampo("endereco", endereco);
+    addCampo("bairro", bairro);
+    addCampo("complemento", complemento);
+    addCampo("cargo", cargo);
+    addCampo("membrodesde", membro);
+    addCampo("dtabatismo", batismo);
+    addCampo("email", email?.toLowerCase());
+    addCampo("cidade", cidade);
+    addCampo("cargo2", cargo2);
+    addCampo("cargo3", cargo3);
+    addCampo("cargo4", cargo4);
+    addCampo("cor", cor);
+
+    if (senha) {
+      const hashedPassword = await bcrypt.hash(senha, 10);
+      campos.push(`password = $${index}`);
+      valores.push(hashedPassword);
+      index++;
+    }
+
+    if (campos.length === 0) {
+      return res.status(400).json({ error: "Nenhum campo para atualizar" });
+    }
+
+    valores.push(id);
+
+    const query = `
+      UPDATE usuarios
+      SET ${campos.join(", ")}
+      WHERE id = $${index}
+      RETURNING *
+    `;
+
+    const result = await pool.query(query, valores);
+
+    res.json({
+      message: "Usuário atualizado com sucesso",
+      user: result.rows[0],
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erro ao atualizar usuário" });
+  }
+});
+
 app.listen(port, '0.0.0.0', () => { console.log('Servidor rodando na porta ${port}'); })
