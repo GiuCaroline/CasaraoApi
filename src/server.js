@@ -205,8 +205,8 @@ app.get('/auth/user/:id', async (req, res) => {
     }
 });
 
-app.post('/auth/updateUser/:id', async (req, res) => {
-  const { id } = req.params;
+app.post('/auth/updateUser', async (req, res) => {
+  const { id } = req.body;
 
   let {
     nome,
