@@ -307,4 +307,24 @@ app.put('/auth/updateUser/:id', async (req, res) => {
   }
 });
 
+app.get('/auth/cursos', async (req, res) => {
+    try {
+        const cursos = await pool.query(
+            'SELECT * FROM cursos'
+        );
+
+        if (cursos.rows.length === 0) {
+            return res.status(404).json({ error: 'Não há cursos no momento...' });
+        }
+
+        res.json({
+            cursos: cursos.rows
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erro no servidor' });
+    }
+});
+
 app.listen(port, '0.0.0.0', () => { console.log('Servidor rodando na porta ${port}'); })
